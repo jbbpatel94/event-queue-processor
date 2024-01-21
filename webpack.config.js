@@ -5,9 +5,11 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "index.js",
-    library: "event-batcher",
-    libraryTarget: "umd",
+    library: 'EventQueueProcessor',
+    libraryTarget: 'umd',
+    umdNamedDefine: true,
   },
+  devtool: 'source-map', // Enable source maps for better debugging
   module: {
     rules: [
       {
@@ -17,5 +19,4 @@ module.exports = {
       },
     ],
   },
-  mode: "development",
 }
