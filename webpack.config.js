@@ -1,7 +1,7 @@
 const path = require("path")
 
 module.exports = {
-  entry: path.resolve(__dirname, "src/index.js"),
+  entry: path.resolve(__dirname, "src/index.ts"),
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "index.js",
@@ -10,12 +10,15 @@ module.exports = {
     umdNamedDefine: true,
   },
   devtool: 'source-map', // Enable source maps for better debugging
+  resolve: {
+    extensions: ['.ts', '.js'],
+  },
   module: {
     rules: [
       {
-        test: /\.(js)$/,
+        test: /\.ts$/,
         exclude: /node_modules/,
-        use: "babel-loader",
+        use: 'ts-loader',
       },
     ],
   },

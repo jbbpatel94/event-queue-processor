@@ -1,5 +1,26 @@
-class EventBatchManager {
-    constructor(options) {
+export type ServerRequestFunction = (events: Event[]) => Promise<boolean>;
+export type Event = any;
+export type EventQueueProcessorOptions =  {
+    serverRequest?: ServerRequestFunction;
+    batchInterval?: number;
+    maxRetries?: number;
+    batchSize?: number;
+}
+
+class EventQueueManager {
+    private eventsQueue: { event: Event; priority: boolean }[] = [];
+    private newEventsQueue: { event: Event; priority: boolean }[] = [];
+    private isProcessing: boolean = false;
+    private batchInterval: number;
+    private maxRetries: number;
+    private batchSize: number;
+    private serverRequest: (events:  Event[]) => Promise<boolean>;
+    private retryDelayEnabled: boolean = true;
+    private retryDelayDuration: number = 1000;
+    private timer: number;
+    private batchProcessingLock: boolean = false;
+
+    constructor(options?: EventQueueProcessorOptions) {
         // Set default values for options
         const {
             serverRequest,
@@ -8,20 +29,14 @@ class EventBatchManager {
             batchSize = 5
         } = options || {};
 
-        this.eventsQueue = [];
-        this.newEventsQueue = [];
-        this.isProcessing = false;
         this.batchInterval = batchInterval;
         this.maxRetries = maxRetries;
         this.batchSize = batchSize;
         this.serverRequest = serverRequest || this._defaultFakeServerRequest;
-        this.retryDelayEnabled = true;
-        this.retryDelayDuration = 1000;
-        this.timer = setTimeout(() => this._handleTimer(), this.batchInterval);
-        this.batchProcessingLock = false;
+        this.timer = window.setTimeout(() => this._handleTimer(), this.batchInterval);
     }
 
-    addEventToQueue(event, priority = false) {
+    addEventToQueue(event: Event, priority: boolean = false): void {
         const eventObject = { event, priority };
 
         if (this.isProcessing) {
@@ -40,7 +55,7 @@ class EventBatchManager {
         }
     }
 
-    _defaultFakeServerRequest(events) {
+    private _defaultFakeServerRequest(events: Event[]): Promise<boolean> {
         return new Promise(resolve => {
             setTimeout(() => {
                 const success = Math.random() < 0.8;
@@ -50,7 +65,7 @@ class EventBatchManager {
         });
     }
 
-    async _sendBatch(events) {
+    private async _sendBatch(events: { event: Event; priority: boolean }[]): Promise<void> {
         if (this.isProcessing || events.length === 0 || this.batchProcessingLock) {
             return;
         }
@@ -74,7 +89,7 @@ class EventBatchManager {
         }
     }
 
-    async _retrySendBatch(events) {
+    private async _retrySendBatch(events: { event: Event; priority: boolean }[]): Promise<void> {
         if (this.maxRetries > 0 && !this.isProcessing && !this.batchProcessingLock) {
             console.log('Batch failed to send. Retrying...');
             this.maxRetries--;
@@ -97,15 +112,15 @@ class EventBatchManager {
         }
     }
 
-    _handleTimer() {
+    private _handleTimer(): void {
         clearTimeout(this.timer);
 
         if (this.eventsQueue.length > 0) {
             this._sendBatch([...this.eventsQueue, ...this.newEventsQueue]);
         }
 
-        this.timer = setTimeout(() => this._handleTimer(), this.batchInterval);
+        this.timer = window.setTimeout(() => this._handleTimer(), this.batchInterval);
     }
 }
 
-export default EventBatchManager;
+export default EventQueueManager;
