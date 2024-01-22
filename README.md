@@ -46,8 +46,8 @@ const options = {
     batchSize: 10
 };
 
-// Create an instance of EventBatcher
-const eventQueueProcessor = new EventBatcher(options);
+// Create an instance of EventQueueProcessor
+const eventQueueProcessor = new EventQueueProcessor(options);
 
 
 // Add events to the batch
