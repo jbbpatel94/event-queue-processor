@@ -1,6 +1,6 @@
 {
   "name": "event-queue-processor",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Event queue processor for client-side JavaScript",
   "main": "dist/index.js",
   "scripts": {
