@@ -5,7 +5,7 @@ class EventBatcher {
         this.eventBatchManager = new EventBatchManager(options);
     }
 
-    addEventToBatch(event, priority = false) {
+    addEventToQueue(event, priority = false) {
         this.eventBatchManager.addEventToQueue(event, priority);
     }
 }
