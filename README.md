@@ -1,6 +1,6 @@
 # Event Queue Processor
 
-[![npm version](https://badge.fury.io/js/event-queue-processor.svg)](1.1.0)
+[![npm version](https://badge.fury.io/js/event-queue-processor.svg)](1.1.1)
 
 Event Queue Processor is a JavaScript library for client-side event batching and processing.
 
