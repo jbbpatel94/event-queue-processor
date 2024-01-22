@@ -1,4 +1,6 @@
-import EventBatcher from './event-batcher.js';
+import EventQueueProcessor from './event-batcher.js';
 
-export default EventBatcher;
+export default EventQueueProcessor;
+
+export { EventQueueProcessor }
 
